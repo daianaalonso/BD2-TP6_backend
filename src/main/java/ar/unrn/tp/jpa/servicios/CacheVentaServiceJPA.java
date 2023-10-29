@@ -29,15 +29,14 @@ public class CacheVentaServiceJPA implements CacheVentaService {
     public void guardarVentas(Long idCliente, List<Venta> ventas) {
         this.start();
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        for (Venta v : ventas) {
+
             try {
-                String ventaJson = mapper.writeValueAsString(v);
-                this.jedis.lpush("cliente:" + idCliente.toString(), ventaJson);
+                String ventaJson = mapper.writeValueAsString(ventas);
+                this.jedis.set("cliente:" + idCliente.toString(), ventaJson);
             } catch (JsonProcessingException e) {
-                this.close();
                 throw new RuntimeException(e);
             }
-        }
+
         this.close();
     }
 
@@ -45,16 +44,17 @@ public class CacheVentaServiceJPA implements CacheVentaService {
     public Optional<List<Venta>> listarVentasDeCliente(Long idCliente) {
         this.start();
         ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-        List<String> ventasJson = this.jedis.lrange("cliente:" + idCliente.toString(), 0, -1);
-        List<Venta> ventas = new ArrayList<>();
-        for (String ventaJson : ventasJson) {
+        String ventasJson = this.jedis.get("cliente:" + idCliente.toString());
+        if (ventasJson == null){
+            return Optional.empty();
+        }
+        List<Venta> ventas = null;
             try {
-                Venta venta = mapper.readValue(ventaJson, Venta.class);
-                ventas.add(venta);
+                ventas = mapper.readValue(ventasJson, List.class);
+
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }
         this.close();
 
         return Optional.ofNullable(ventas);

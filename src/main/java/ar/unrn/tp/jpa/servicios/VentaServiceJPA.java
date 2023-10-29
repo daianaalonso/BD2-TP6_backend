@@ -155,9 +155,7 @@ public class VentaServiceJPA implements VentaService {
             q.setParameter("idCliente", idCliente);
             q.setMaxResults(3);
             List<Venta> ventas = q.getResultList();
-            // las guarda solo si existen ventas
-            if (!ventas.isEmpty())
-                cacheVentaService.guardarVentas(idCliente, ventas);
+            cacheVentaService.guardarVentas(idCliente, ventas);
             return ventas;
         } catch (Exception e) {
             tx.rollback();

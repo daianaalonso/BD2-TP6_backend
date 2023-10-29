@@ -26,6 +26,9 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
+
+    @Autowired
+    CacheVentaServiceJPA cacheVentaServiceJPA;
     @Autowired
     ClienteServiceJPA clienteServiceJPA;
     @Autowired

@@ -34,7 +34,7 @@ public class VentaController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping("/compras")
     public ResponseEntity<List<Venta>> listarUltimasVentas(@NonNull Long id) {
         return new ResponseEntity<>(ventaService.ultimasVentas(id), HttpStatus.OK);
     }
